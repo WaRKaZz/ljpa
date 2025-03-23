@@ -1,0 +1,36 @@
+services:
+  linkedin-bot:
+    build: .
+    container_name: linkedin-bot
+    volumes:
+      - ./resources:/code/resources
+      - ./screenshots:/code/screenshots
+    ports:
+      - "8080:8080"
+      - "5900:5900"
+    env_file:
+      - .env # Load environment variables from .env file
+    networks:
+      - app-network
+    restart: unless-stopped
+  g4f:
+    image: hlohaus789/g4f:latest-slim
+    container_name: g4f
+    volumes:
+      - ./har_and_cookies:/app/har_and_cookies
+      - ./generated_images:/app/generated_images
+    environment:
+      - G4F_DEBUG=true
+    command: >
+      sh -c "rm -rf /app/g4f/ &&
+             pip install -U g4f[slim] &&
+             python -m g4f --debug"
+    networks:
+      - app-network
+    depends_on:
+      - linkedin-bot
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge

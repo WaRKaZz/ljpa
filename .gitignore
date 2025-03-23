@@ -1,0 +1,20 @@
+.vscode/
+*.code-workspace
+
+# Exclude Python cache
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+
+# Exclude environment and temporary files (optional, adjust if needed)
+.env
+.venv
+*.log
+.git
+
+/screenshots
+/resources
+generated_images/
+har_and_cookies/
+test.py
