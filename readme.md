@@ -11,7 +11,7 @@ A Telegram bot designed to streamline the job search process by aggregating vaca
 1. Clone the repository:
     ```bash
     git clone https://github.com/warkazz/ljpa.git
-    cd linkedin-bot
+    cd ljpa
     ```
 2. Preconfigure your Telegram bot:
     - Create a new bot using [@BotFather](https://t.me/BotFather) on Telegram.
