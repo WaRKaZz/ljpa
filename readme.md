@@ -46,18 +46,18 @@ A Telegram bot designed to streamline the job search process by aggregating vaca
 
 4. Start the application:
     ```bash
-    docker-compose up -d
+    docker compose build && docker compose pull && docker compose up -d && docker compose logs -f
     ```
 
-# First-Time Login to Leakding
-A manual login to Leakding may be required. If you see a log message indicating that manual login is needed, follow these steps:
+# First-Time Login to Linkedin
+A manual login to Linkedin may be required. If you see a log message indicating that manual login is needed, follow these steps:
 1. Open your browser and navigate to:
     ```
     http://localhost:8080/vnc.html
     ```
 2. You will be prompted to enter the VNC password.
 3. Use the password set in the `.env` file under `VNC_PASSWORD`.
-4. Log in to your Leakding account using your credentials.
+4. Log in to your Linkedin account using your credfockdentials.
 
 After the first login, the bot will handle the rest automatically.
 
