@@ -80,3 +80,8 @@ CMD ["sh", "-c", \
     fluxbox & \
     x11vnc -display :99 -forever -shared -noxdamage -passwd ${VNC_PASSWORD} & \
     websockify -D --web /usr/share/novnc 8080 localhost:5900 & python database_setup.py && python main.py"]
+# CMD ["sh", "-c", \
+#     "Xvfb :99 -screen 0 1280x820x24 -ac +extension GLX +render -noreset & \
+#     fluxbox & \
+#     x11vnc -display :99 -forever -shared -noxdamage -passwd ${VNC_PASSWORD} & \
+#     websockify -D --web /usr/share/novnc 8080 localhost:5900 & python database_setup.py && while true; do sleep 30; done;"]

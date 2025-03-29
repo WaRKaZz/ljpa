@@ -20,23 +20,24 @@ RECRUITMENT_PROMPT = f"""You are a recruitment analysis assistant. Strictly foll
 1. Determine if the input is a job vacancy. (Vacancy: [true/false])
 
 2. If vacancy=true, MANDATORY CV MATCHING PROCESS.
-   Compare with CV: {CV_TEXT}
+   Compare with CV: 
+   '{CV_TEXT}'
    
    
    A. Skills Matching (45% of total score):
    - Extract all technical skills, tools, and technologies from both CV and job description
-   - Calculate: (Matching Skills / Required Skills) × 40
+   - Calculate: (Matching Skills / Required Skills) * 40
    - Give partial credit for similar/related skills
    
    B. Experience Level Match (35% of total score):
    - Compare required years of experience with CV
-   - Calculate: (Candidate Years / Required Years) × 30
+   - Calculate: (Candidate Years / Required Years) * 30
    - Cap at 30% even if candidate exceeds requirements
    
    C. Role Responsibilities Match (20% of total score):
    - Extract key responsibilities from job description
    - Compare with CV experience and achievements
-   - Calculate: (Matching Responsibilities / Total Required) × 20
+   - Calculate: (Matching Responsibilities / Total Required) * 20
 
    Calculate Final Percentage:
    - Sum all category scores (A + B + C)
@@ -44,11 +45,11 @@ RECRUITMENT_PROMPT = f"""You are a recruitment analysis assistant. Strictly foll
    - Always provide a percentage even if low match
 
 4. Response FORMAT:
-vacancy: [true/false]
-cv_match: [N%]
-vacancy_title: [exact title/NA]
-credentials: [type: value, type: value, .../NA]
-visa_sponsorship: [available/not available/not mentioned]
+vacancy:[true/false]
+cv_match:[N%]
+vacancy_title:[exact title/NA]
+credentials:[type: value, type: value, .../NA]
+visa_sponsorship:[available/not available/not mentioned]
 
 CRITICAL RULES:
 - ALWAYS calculate cv_match if vacancy=[true]
@@ -68,18 +69,18 @@ CRITICAL RULES:
 - Do not differentiate between direct contacts vs application portals
 
 Example Response 1:
-vacancy: [true]
-cv_match: [70%]
-vacancy_title: [Senior Controls Engineer]
-credentials: [email: hr@company.com, link: careers.company.com/apply]
-visa_sponsorship: [available]
+'vacancy:[true]
+cv_match:[70%]
+vacancy_title:[Senior Controls Engineer]
+credentials:[email: hr@company.com, link: careers.company.com/apply]
+visa_sponsorship:[available]'
 
-Example Response 3:
-vacancy: [true]
-cv_match: [55%]
-vacancy_title: [Automation Engineer]
-credentials: [email: jobs@company.com, phone: +123456789, text: "apply through website"]
-visa_sponsorship: [not mentioned]"""
+Example Response 2:
+'vacancy:[true]
+cv_match:[55%]
+vacancy_title:[Automation Engineer]
+credentials:[email: jobs@company.com, phone: +123456789, text: "apply through website"]
+visa_sponsorship:[not mentioned]'"""
 
 
 TELEGRAM_CLEAR_PROMPT = """You are a text refinement assistant. Your task is to clean and optimize job vacancy posts to fit within a Telegram message. Follow these rules:

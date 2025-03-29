@@ -93,3 +93,7 @@ This project is licensed under the MIT License. See the LICENSE file for more de
 ## Contributing
 Feel free to submit issues or pull requests for enhancements.
 
+## Important Notice
+
+The application is currently in its Alpha stage and functions as is. It may not work as intended. Use it at your own risk.
+

@@ -33,21 +33,22 @@ class LinkedInScraper:
         options = ChromeOptions()
 
         # Essential options for Docker + GUI
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--disable-gpu")
-        options.add_argument("--disable-notifications")
-        options.add_argument("--window-size=1280,720")
+        # options.add_argument("--no-sandbox")
+        # options.add_argument("--disable-dev-shm-usage")
+        # options.add_argument("--disable-gpu")
+        # options.add_argument("--disable-notifications")
+        # options.add_argument("--window-size=1280,720")
 
-        # Important for Xvfb display
-        options.add_argument("--remote-debugging-port=9222")
-        options.add_argument("--verbose")
+        # # Important for Xvfb display
+        # options.add_argument("--remote-debugging-port=9222")
+        # options.add_argument("--verbose")
 
-        service = Service(
-            executable_path="/usr/bin/chromedriver",
-        )
+        # service = Service(
+        #     executable_path="/usr/bin/chromedriver",
+        # )
 
-        return webdriver.Chrome(service=service, options=options)
+        # return webdriver.Chrome(service=service, options=options)
+        return webdriver.Chrome(options=options)
 
     # Rest of the class remains the same as original Firefox version
     @staticmethod
@@ -124,13 +125,14 @@ class LinkedInScraper:
                 try:
                     more_button = post.find_element(
                         By.CSS_SELECTOR,
-                        ".feed-shared-inline-show-more-text__see-more-less-toggle",
+                        ".feed-shared-inline-show-more-text__see-more-less-toggle > span",
                     )
                 except NoSuchElementException:
                     more_button = None
                     print("no element")
                 if more_button:
-                    more_button.click
+                    self.driver.execute_script("arguments[0].click();", more_button)
+                    # more_button.click()
                 response[post.text] = post.screenshot_as_png
             return response
 
@@ -162,7 +164,7 @@ def startLinkedinScrapper():
 
 
 if __name__ == "__main__":
-    scraper = LinkedInScraper(headless=False)
+    scraper = LinkedInScraper()
     if scraper.login():
         posts = scraper.search_posts()
         if posts:

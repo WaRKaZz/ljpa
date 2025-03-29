@@ -1,6 +1,9 @@
 import logging
 import re
 
+from services.email import SMTPSender
+from services.GPT_API import GPT4FreeInteraction
+
 from consts import (
     COVER_LETTER_PROMPT,
     CV_FILE_PATH_PDF,
@@ -11,8 +14,6 @@ from consts import (
     SMTP_SERVER,
 )
 from database_setup import TextEntry
-from services.email import SMTPSender
-from services.GPT_API import GPT4FreeInteraction
 
 logging.basicConfig(level=logging.INFO)
 
@@ -41,7 +42,7 @@ class EmailProcessor:
         eligible = []
         for vacancy in TextEntry.select().where(
             TextEntry.visa_sponsorship == "available"
-        ):  
+        ):
             logging.info(f"Trying to apply {vacancy.vacancy_title}")
             cv_value = vacancy.cv_match
             cleaned = cv_value.replace("%", "").strip()

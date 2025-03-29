@@ -6,7 +6,7 @@ from linkedin import startLinkedinScrapper
 from telemessage import TelegramNotifier
 
 from database.repository import TextEntryRepository
-from services.gpt_processor import VacancyProcessor
+from services.gpt_processor import GPTProcessor
 from utilities.file_handler import save_screenshot
 
 logging.basicConfig(level=logging.INFO)
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class LinkedInBot:
     def __init__(self):
         self.repo = TextEntryRepository()
-        self.processor = VacancyProcessor()
+        self.processor = GPTProcessor()
         self.notifier = TelegramNotifier()
 
     def process_posts(self):
@@ -55,7 +55,7 @@ class LinkedInBot:
         try:
             caption = self._prepare_caption(vacancy)
             description = self.processor.generate_description(vacancy.content)
-            
+
             self.notifier.send_image(vacancy.screenshot_path, caption)
             self.notifier.send_message(description)
         except Exception as e:
