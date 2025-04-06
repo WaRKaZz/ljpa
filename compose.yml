@@ -1,6 +1,6 @@
 services:
   selenium:
-    image: selenium/standalone-chrome # VNC-enabled
+    image: selenium/standalone-chromium # VNC-enabled
     ports:
       - "4444:4444" # Selenium WebDriver
       - "${NOVNC_PORT:-7900}:7900" # VNC port (connect with VNC viewer)
