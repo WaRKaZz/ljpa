@@ -1,17 +1,24 @@
 services:
+  selenium:
+    image: selenium/standalone-chrome # VNC-enabled
+    ports:
+      - "4444:4444" # Selenium WebDriver
+      - "${NOVNC_PORT:-7900}:7900" # VNC port (connect with VNC viewer)
+    shm_size: '2g' # Critical for Chrome
+    networks:
+      - ljpa-network
+    environment:
+      - SE_VNC_NO_PASSWORD=1 # Optional: Disable VNC password
   linkedin-bot:
     build: .
     container_name: linkedin-bot
     volumes:
       - ./resources:/code/resources
       - ./screenshots:/code/screenshots
-    ports:
-      - "${NOVNC_PORT:-8080}:8080"
-      - "5900:5900"
     env_file:
       - .env # Load environment variables from .env file
     networks:
-      - app-network
+      - ljpa-network
     restart: unless-stopped
   g4f:
     image: hlohaus789/g4f:latest-slim
@@ -26,11 +33,11 @@ services:
              pip install -U g4f[slim] &&
              python -m g4f --debug"
     networks:
-      - app-network
+      - ljpa-network
     depends_on:
       - linkedin-bot
     restart: unless-stopped
 
 networks:
-  app-network:
+  ljpa-network:
     driver: bridge

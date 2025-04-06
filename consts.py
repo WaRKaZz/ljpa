@@ -6,7 +6,10 @@ SMTP_EMAIL = os.getenv("SMTP_EMAIL")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 SMTP_SERVER = os.getenv("SMTP_SERVER")
 SMTP_PORT = os.getenv("SMTP_PORT")
-RESOURCES_PATH = "resources"
+RESOURCES_PATH = "resources"\
+
+SELENIUM_COMMAND_EXECUTOR = f'http://{os.getenv("SELENIUM_HOST")}:{os.getenv("SELENIUM_PORT")}/wd/hub'
+
 CV_FILE_PATH_PDF = os.path.join(
     os.getcwd(), RESOURCES_PATH, os.getenv("CV_FILE_NAME_PDF")
 )

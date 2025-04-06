@@ -13,7 +13,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from consts import LINKEDIN_SEARCH_URL, RESOURCES_PATH
+from consts import LINKEDIN_SEARCH_URL, RESOURCES_PATH, SELENIUM_COMMAND_EXECUTOR
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -33,22 +33,16 @@ class LinkedInScraper:
         options = ChromeOptions()
 
         # Essential options for Docker + GUI
-        # options.add_argument("--no-sandbox")
-        # options.add_argument("--disable-dev-shm-usage")
-        # options.add_argument("--disable-gpu")
-        # options.add_argument("--disable-notifications")
-        # options.add_argument("--window-size=1280,720")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
 
-        # # Important for Xvfb display
-        # options.add_argument("--remote-debugging-port=9222")
-        # options.add_argument("--verbose")
-
-        # service = Service(
-        #     executable_path="/usr/bin/chromedriver",
-        # )
-
+        # Important for Xvfb display
+        options.add_argument("--remote-debugging-port=9222")
+        options.add_argument("--verbose")
         # return webdriver.Chrome(service=service, options=options)
-        return webdriver.Chrome(options=options)
+        return webdriver.Remote(
+            command_executor=SELENIUM_COMMAND_EXECUTOR, options=options
+        )
 
     # Rest of the class remains the same as original Firefox version
     @staticmethod
