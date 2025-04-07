@@ -1,14 +1,4 @@
 services:
-  linkedin-bot:
-    build: .
-    container_name: linkedin-bot
-    volumes:
-      - ./resources:/code/resources
-      - ./screenshots:/code/screenshots
-    env_file:
-      - .env # Load environment variables from .env file
-    networks:
-      - ljpa-network
   selenium:
     image: selenium/standalone-chromium # VNC-enabled
     ports:
@@ -21,6 +11,25 @@ services:
       - ljpa-network
     environment:
       - SE_VNC_NO_PASSWORD=1 # Optional: Disable VNC password
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:4444/wd/hub/status" ]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+  linkedin-bot:
+    build: .
+    container_name: linkedin-bot
+    volumes:
+      - ./resources:/code/resources
+      - ./screenshots:/code/screenshots
+    env_file:
+      - .env # Load environment variables from .env file
+    depends_on:
+      selenium:
+        condition: service_healthy
+    networks:
+      - ljpa-network
+
   g4f:
     image: hlohaus789/g4f:latest-slim
     container_name: g4f
