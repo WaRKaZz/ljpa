@@ -5,8 +5,6 @@ services:
       - "4444:4444" # Selenium WebDriver
       - "${NOVNC_PORT:-7900}:7900" # VNC port (connect with VNC viewer)
     shm_size: '2g' # Critical for Chrome
-    depends_on:
-      - linkedin-bot
     networks:
       - ljpa-network
     environment:
