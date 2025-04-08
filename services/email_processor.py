@@ -1,9 +1,6 @@
 import logging
 import re
 
-from services.email import SMTPSender
-from services.GPT_API import GPT4FreeInteraction
-
 from consts import (
     COVER_LETTER_PROMPT,
     CV_FILE_PATH_PDF,
@@ -14,6 +11,8 @@ from consts import (
     SMTP_SERVER,
 )
 from database_setup import TextEntry
+from services.email import SMTPSender
+from services.GPT_API import GPT4FreeInteraction
 
 logging.basicConfig(level=logging.INFO)
 
@@ -34,7 +33,7 @@ class EmailProcessor:
             email = self.extract_valid_email(vacancy)
             if not email:
                 continue
-            self.send_application(email, vacancy)
+            self.send_application(email, vacancy.vacancy_title, vacancy.content)
             vacancy.spare1 = "Applied"
             vacancy.save()
 
@@ -77,12 +76,11 @@ class EmailProcessor:
             logging.warning("No email found in: %s", vacancy.vacancy_title)
             return None
 
-    def send_application(self, email, vacancy):
-        subject = vacancy.vacancy_title.title()
-        message = self.gpt_api.get_text(
-            COVER_LETTER_PROMPT, f"Job Description: [{vacancy.content}]"
-        )
-        message += EMAIL_SIGNATURE
+    def send_application(self, email, title, content):
+        subject = title
+        GPT_REQUEST = COVER_LETTER_PROMPT + f"\nJob Description: [{content}]"
+        message = self.gpt_api.get_text(GPT_REQUEST)
+        print(f"Subject: {subject} \nMessage: {message}")
         with SMTPSender(self.smtp_config) as sender:
             sender.send_message(email, subject, message, CV_FILE_PATH_PDF)
         logging.info("Email sent successfully to %s", email)

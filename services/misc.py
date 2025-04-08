@@ -8,9 +8,8 @@ from services.GPT_API import GPT4FreeInteraction
 def database_vacancy_title_update():
     gpt_api = GPT4FreeInteraction()
     for vacancy in TextEntry.select().where(TextEntry.vacancy_title == None):
-        vacancy_title = gpt_api.get_text(
-            system_prompt=JOB_TITLE_EXTRACTOR_PROMPT, prompt=vacancy.content
-        )
+        GPT_REQUEST = JOB_TITLE_EXTRACTOR_PROMPT + vacancy.content
+        vacancy_title = gpt_api.get_text(GPT_REQUEST)
         print(vacancy_title)
         input("Press Enter to continue... or ctrl+c to abort")
         vacancy.vacancy_title = vacancy_title

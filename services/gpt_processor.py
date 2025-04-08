@@ -22,7 +22,8 @@ class GPTProcessor:
         clean_text = self._sanitize_text(text)
         for attempt in range(self.MAX_RETRIES):
             try:
-                response = self.gpt.get_text(RECRUITMENT_PROMPT, clean_text)
+                GPT_REQUEST = RECRUITMENT_PROMPT + clean_text
+                response = self.gpt.get_text(GPT_REQUEST)
                 return self._validate_response(response)
             except (ResponseFormatError, KeyError) as e:
                 logging.error(f"Failed to process vacancy:\n{e}\nresponce={response}")
@@ -31,7 +32,8 @@ class GPTProcessor:
         return {"vacancy": "false"}
 
     def generate_description(self, text: str) -> str:
-        return self.gpt.get_text(TELEGRAM_CLEAR_PROMPT, text)
+        GPT_REQUEST = TELEGRAM_CLEAR_PROMPT + text
+        return self.gpt.get_text(GPT_REQUEST)
 
     def _sanitize_text(self, text: str) -> str:
         return text.replace("ivan.danilov.wk@gmail.com", "").replace(

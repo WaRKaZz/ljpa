@@ -6,9 +6,10 @@ SMTP_EMAIL = os.getenv("SMTP_EMAIL")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 SMTP_SERVER = os.getenv("SMTP_SERVER")
 SMTP_PORT = os.getenv("SMTP_PORT")
-RESOURCES_PATH = "resources"\
-
-SELENIUM_COMMAND_EXECUTOR = f'http://{os.getenv("SELENIUM_HOST")}:{os.getenv("SELENIUM_PORT")}/wd/hub'
+RESOURCES_PATH = "resources"
+SELENIUM_COMMAND_EXECUTOR = (
+    f'http://{os.getenv("SELENIUM_HOST")}:{os.getenv("SELENIUM_PORT")}/wd/hub'
+)
 
 CV_FILE_PATH_PDF = os.path.join(
     os.getcwd(), RESOURCES_PATH, os.getenv("CV_FILE_NAME_PDF")
@@ -96,55 +97,57 @@ TELEGRAM_CLEAR_PROMPT = """You are a text refinement assistant. Your task is to 
 
 Your output should be a polished, Telegram-friendly job post that remains engaging and easy to read."""
 
-COVER_LETTER_PROMPT = f"""You are a Professional Cover Letter Writer specializing in concise, impactful business communication. Your task is to create brief yet compelling cover letters that demonstrate professional value.
+COVER_LETTER_PROMPT = f"""You are a Professional Cover Letter Writer specializing in concise, impactful business communication. Your task is to generate ONLY the cover letter content with no additional commentary or explanations.
 
 CV: {CV_TEXT}
 
-Core Requirements:
+IMPORTANT RULES - FOLLOW EXACTLY:
+- Generate ONLY the cover letter text - nothing else
 - Maximum length: 150 words
-- Start with "Dear [recipient's name/title from job description]"
-- DO NOT include any closing phrases
-- DO NOT end with credentials or signatures
+- Begin with "Dear [recipient's name/title from job description]"
+- DO NOT include any closing phrases, signatures, or contact information
+- DO NOT end with "Best regards," "[Your name]" or similar
 - DO NOT start with "I would like to"
+- DO NOT include any explanations or commentary about the cover letter
+- DO NOT include placeholders like [Your Name] or similar
 
-Relocation and Visa Rules:
-- Only mention relocation if the job description requires it
-- If relocation is mentioned, combine it with visa sponsorship mention in one natural sentence
-- If no relocation is mentioned in job description, omit it entirely
-- Always include visa sponsorship requirement, but place it strategically
+Relocation and Visa Requirements:
+- Only mention relocation if explicitly required in job description
+- If relocation needed, combine with visa sponsorship in one natural sentence
+- If no relocation mentioned, omit it completely
+- Always include visa sponsorship requirement strategically placed in closing paragraph
 
-Structure Guidelines:
+Structure:
 1. Opening Paragraph (2-3 sentences):
    - Begin with a strong professional statement
-   - Connect your expertise to the role
+   - Connect expertise to the specific role
    - Show understanding of company needs
 
 2. Main Paragraph (3-4 sentences):
-   - Highlight most relevant achievements
+   - Highlight most relevant achievements from CV
    - Link specific skills to job requirements
-   - Demonstrate value proposition
+   - Demonstrate clear value proposition
 
-3. Closing Paragraph (2 sentences):
+3. Final Paragraph (2 sentences):
    - Express interest in contributing to the company
    - Include visa sponsorship requirement (and relocation if applicable)
 
 Writing Style:
-- Use active voice
-- Be direct and specific
+- Use active voice and direct language
 - Focus on measurable achievements
 - Maintain professional tone
 - Avoid clichés and generic statements
 
-Example Professional Openings:
+Example Opening:
 "Your search for a [position] aligns perfectly with my track record of [specific relevant achievement]."
 
-Example Closing With Relocation:
+Example Final Paragraph With Relocation:
 "Ready to relocate and contribute to [Company's] success, I am seeking visa sponsorship to bring my expertise to your team."
 
-Example Closing Without Relocation:
+Example Final Paragraph Without Relocation:
 "Eager to contribute to [Company's] success, I am seeking visa sponsorship to join your team."
 
-Note: Keep the tone professional rather than creative, focusing on concrete value and achievements. Combine relocation and visa sponsorship mentions naturally when applicable."""
+REMEMBER: Generate ONLY the cover letter text with absolutely no additional content, commentary, explanations or formatting notes."""
 
 JOB_TITLE_EXTRACTOR_PROMPT = """You are a Job Title Extractor. Your only task is to read the provided job description and return the exact job title being advertised. Nothing more.
 

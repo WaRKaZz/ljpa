@@ -12,23 +12,21 @@ class ResponseFormatError(Exception):
 class GPT4FreeInteraction:
     def __init__(self, base_url=f"http://{GPT4FREE_HOST}:1337/v1"):
         self.base_url = base_url
-        self.text_model = "gpt-4o-mini"  # Default text model
+        self.text_model = "o3-mini"  # Default text model
 
     def switch_model(self):
-        if self.text_model == "deepseek-v3":
-            self.text_model = "gpt-4o-mini" 
+        if self.text_model == "o3-mini":
+            self.text_model = "deepseek-r1"
+        elif self.text_model == "deepseek-r1":
+            self.text_model = "gpt-4o-mini"
         elif self.text_model == "gpt-4o-mini":
-            self.text_model = "llama-3.1-70b"
-        elif self.text_model == "llama-3.1-70b":
-            self.text_model = "gemini-1.5-flash"
-        elif self.text_model == "gemini-1.5-flash":
-            self.text_model = "qwen-2.5-coder-32b"
-        elif self.text_model == "qwen-2.5-coder-32b":
-            self.text_model = "qwq-32b"
+            self.text_model = "claude-3.7-sonnet"
+        elif self.text_model == "claude-3.7-sonnet":
+            self.text_model = "gpt-4"
         else:
-            self.text_model = "deepseek-v3"
+            self.text_model = "o3-mini"
 
-    def get_text(self, system_prompt, prompt):
+    def get_text(self, prompt):
         """
         Generate text based on the user's prompt.
         """
@@ -36,7 +34,7 @@ class GPT4FreeInteraction:
         payload = {
             "model": self.text_model,
             "messages": [
-                {"role": "system", "content": system_prompt},
+                {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt},
             ],
             "stream": False,
