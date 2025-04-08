@@ -4,7 +4,7 @@ from datetime import datetime
 
 from database.repository import TextEntryRepository
 from services.gpt_processor import GPTProcessor
-from services.linkedin import startLinkedinScrapper
+from services.linkedin_scraper import startLinkedinScrapper
 from utilities.file_handler import save_screenshot
 
 logging.basicConfig(level=logging.INFO)

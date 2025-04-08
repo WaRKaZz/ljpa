@@ -1,24 +1,47 @@
 import os
+import os.path
 
+# =============================================================================
+# Environment Variables
+# =============================================================================
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 SMTP_EMAIL = os.getenv("SMTP_EMAIL")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 SMTP_SERVER = os.getenv("SMTP_SERVER")
 SMTP_PORT = os.getenv("SMTP_PORT")
-RESOURCES_PATH = "resources"
-SELENIUM_COMMAND_EXECUTOR = (
-    f'http://{os.getenv("SELENIUM_HOST")}:{os.getenv("SELENIUM_PORT")}/wd/hub'
-)
+EMAIL_SIGNATURE = os.getenv("EMAIL_SIGNATURE")
+GPT4FREE_HOST = os.getenv("GPT4FREE_HOST")
+LINKEDIN_SEARCH_URL = os.getenv("LINKEDIN_SEARCH_URL")
 
-CV_FILE_PATH_PDF = os.path.join(
-    os.getcwd(), RESOURCES_PATH, os.getenv("CV_FILE_NAME_PDF")
-)
-CV_FILE_PATH_TXT = os.path.join(
-    os.getcwd(), RESOURCES_PATH, os.getenv("CV_FILE_NAME_TXT")
-)
-with open(CV_FILE_PATH_TXT, "r") as file:
-    CV_TEXT = file.read()
+# Selenium configuration
+SELENIUM_HOST = os.getenv("SELENIUM_HOST")
+SELENIUM_PORT = os.getenv("SELENIUM_PORT")
+SELENIUM_COMMAND_EXECUTOR = f'http://{SELENIUM_HOST}:{SELENIUM_PORT}/wd/hub'
+
+# =============================================================================
+# File Paths and Resource Settings
+# =============================================================================
+BASE_DIR = os.getcwd()
+RESOURCES_PATH = "resources"
+
+CV_FILE_NAME_PDF = os.getenv("CV_FILE_NAME_PDF")
+CV_FILE_NAME_TXT = os.getenv("CV_FILE_NAME_TXT")
+CV_FILE_PATH_PDF = os.path.join(BASE_DIR, RESOURCES_PATH, CV_FILE_NAME_PDF)
+CV_FILE_PATH_TXT = os.path.join(BASE_DIR, RESOURCES_PATH, CV_FILE_NAME_TXT)
+
+# Load CV text from the text file
+try:
+    with open(CV_FILE_PATH_TXT, "r") as file:
+        CV_TEXT = file.read()
+except FileNotFoundError:
+    CV_TEXT = ""
+    # Optionally log an error or raise an exception if the CV text is critical.
+    # For example: raise FileNotFoundError(f"CV file not found: {CV_FILE_PATH_TXT}")
+
+# =============================================================================
+# Prompt Templates
+# =============================================================================
 RECRUITMENT_PROMPT = f"""You are a recruitment analysis assistant. Strictly follow these steps:
 
 1. Determine if the input is a job vacancy. (Vacancy: [true/false])
@@ -26,7 +49,6 @@ RECRUITMENT_PROMPT = f"""You are a recruitment analysis assistant. Strictly foll
 2. If vacancy=true, MANDATORY CV MATCHING PROCESS.
    Compare with CV: 
    '{CV_TEXT}'
-   
    
    A. Skills Matching (45% of total score):
    - Extract all technical skills, tools, and technologies from both CV and job description
@@ -86,7 +108,6 @@ vacancy_title:[Automation Engineer]
 credentials:[email: jobs@company.com, phone: +123456789, text: "apply through website"]
 visa_sponsorship:[not mentioned]'"""
 
-
 TELEGRAM_CLEAR_PROMPT = """You are a text refinement assistant. Your task is to clean and optimize job vacancy posts to fit within a Telegram message. Follow these rules:
 
 1. Keep all essential details: job title, company name, responsibilities, requirements, and benefits.
@@ -145,9 +166,7 @@ Example Final Paragraph With Relocation:
 "Ready to relocate and contribute to [Company's] success, I am seeking visa sponsorship to bring my expertise to your team."
 
 Example Final Paragraph Without Relocation:
-"Eager to contribute to [Company's] success, I am seeking visa sponsorship to join your team."
-
-REMEMBER: Generate ONLY the cover letter text with absolutely no additional content, commentary, explanations or formatting notes."""
+"Eager to contribute to [Company's] success, I am seeking visa sponsorship to join your team."""
 
 JOB_TITLE_EXTRACTOR_PROMPT = """You are a Job Title Extractor. Your only task is to read the provided job description and return the exact job title being advertised. Nothing more.
 
@@ -201,7 +220,3 @@ Industry-Specific Variations:
 "Mining Automation Engineer"
 
 Do not include quotation marks or any other formatting in your response. Provide only the job title itself."""
-
-EMAIL_SIGNATURE = os.getenv("EMAIL_SIGNATURE")
-GPT4FREE_HOST = os.getenv("GPT4FREE_HOST")
-LINKEDIN_SEARCH_URL = os.getenv("LINKEDIN_SEARCH_URL")

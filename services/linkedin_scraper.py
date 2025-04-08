@@ -3,56 +3,68 @@ import logging
 import os
 from getpass import getpass
 from time import sleep
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver import ChromeOptions
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from consts import LINKEDIN_SEARCH_URL, RESOURCES_PATH, SELENIUM_COMMAND_EXECUTOR
+from config import LINKEDIN_SEARCH_URL, RESOURCES_PATH, SELENIUM_COMMAND_EXECUTOR
 
+# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 class LinkedInScraper:
+    """
+    Scraper for LinkedIn that handles login, scrolling, and post extraction.
+    """
+
     LOGIN_URL = "https://www.linkedin.com/login"
     SEARCH_URL = LINKEDIN_SEARCH_URL
     COOKIES_PATH = os.path.join(RESOURCES_PATH, "linkedin_cookies.json")
     SCREENSHOT_PATH = "/tmp/linkedin_error.png"
 
-    def __init__(self):
-        self.driver = self._configure_driver()
+    def __init__(self) -> None:
+        self.driver: WebDriver = self._configure_driver()
         self.wait = WebDriverWait(self.driver, 15)
 
-    def _configure_driver(self) -> webdriver.Chrome:
+    def _configure_driver(self) -> WebDriver:
+        """
+        Configures and returns a Selenium Remote WebDriver using Chrome options.
+        """
         options = ChromeOptions()
-
-        # Essential options for Docker + GUI
+        # Options for Docker and headless environments
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-
-        # Important for Xvfb display
         options.add_argument("--remote-debugging-port=9222")
         options.add_argument("--verbose")
-        # return webdriver.Chrome(service=service, options=options)
         return webdriver.Remote(
             command_executor=SELENIUM_COMMAND_EXECUTOR, options=options
         )
 
-    # Rest of the class remains the same as original Firefox version
     @staticmethod
     def _get_credentials() -> Tuple[str, str]:
-        return (
-            os.getenv("LINKEDIN_EMAIL") or input("LinkedIn email: "),
-            os.getenv("LINKEDIN_PASSWORD") or getpass("LinkedIn password: "),
-        )
+        """
+        Retrieves LinkedIn credentials from environment variables or via user prompt.
+        """
+        email = os.getenv("LINKEDIN_EMAIL") or input("LinkedIn email: ")
+        password = os.getenv("LINKEDIN_PASSWORD") or getpass("LinkedIn password: ")
+        return email, password
 
-    def _scroll_down(self, scroll_pause: float = 2.0, max_scrolls: int = 10):
+    def _scroll_down(self, scroll_pause: float = 2.0, max_scrolls: int = 10) -> None:
+        """
+        Scrolls down the page to load additional content.
+
+        Args:
+            scroll_pause (float): Pause time between scrolls.
+            max_scrolls (int): Maximum number of scrolls.
+        """
         last_height = self.driver.execute_script("return document.body.scrollHeight")
         for _ in range(max_scrolls):
             self.driver.execute_script(
@@ -64,19 +76,32 @@ class LinkedInScraper:
                 break
             last_height = new_height
 
-    def _save_cookies(self):
+    def _save_cookies(self) -> None:
+        """
+        Saves the current session cookies to a file.
+        """
         with open(self.COOKIES_PATH, "w") as file:
             json.dump(self.driver.get_cookies(), file)
-        logger.info("Cookies saved.")
+        logger.info("Cookies saved to %s", self.COOKIES_PATH)
 
-    def _load_cookies(self):
+    def _load_cookies(self) -> None:
+        """
+        Loads session cookies from a file if available.
+        """
         if os.path.exists(self.COOKIES_PATH):
             with open(self.COOKIES_PATH, "r") as file:
-                for cookie in json.load(file):
+                cookies = json.load(file)
+                for cookie in cookies:
                     self.driver.add_cookie(cookie)
-            logger.info("Cookies loaded.")
+            logger.info("Cookies loaded from %s", self.COOKIES_PATH)
 
     def login(self) -> bool:
+        """
+        Performs login on LinkedIn using saved cookies or by providing credentials.
+
+        Returns:
+            bool: True if login is successful; False otherwise.
+        """
         try:
             self.driver.get(self.LOGIN_URL)
             self._load_cookies()
@@ -92,69 +117,92 @@ class LinkedInScraper:
             self.driver.find_element(By.ID, "password").send_keys(password)
             self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
+            # Wait until user is redirected to the feed or challenge checkpoint appears.
             self.wait.until(
                 lambda d: "feed" in d.current_url
                 or "checkpoint/challenge" in d.current_url
             )
+
             if "checkpoint/challenge" in self.driver.current_url:
-                logger.warning("2FA required! Please complete verification.")
+                logger.warning(
+                    "Two-factor authentication required! Please complete verification."
+                )
                 sleep(360)
 
             self._save_cookies()
             logger.info("Login successful!")
             return True
-        except Exception as e:
-            logger.error("Login failed: %s", e)
+        except Exception as err:
+            logger.error("Login failed: %s", err)
             self._capture_screenshot()
             return False
 
-    def search_posts(self) -> Optional[List[str]]:
+    def search_posts(self) -> Optional[Dict[str, bytes]]:
+        """
+        Searches for posts on LinkedIn by scrolling and extracting text and screenshots.
+
+        Returns:
+            Optional[Dict[str, bytes]]: Dictionary mapping post text to screenshot PNG bytes,
+                                        or None if an error occurs.
+        """
         try:
             self.driver.get(self.SEARCH_URL)
             self._scroll_down(scroll_pause=2.0, max_scrolls=5)
-            sleep(5)
-            posts = self.driver.find_elements(By.CLASS_NAME, "fie-impression-container")
-            response = {}
-            for post in posts[:10]:
+            sleep(5)  # Ensure page content is fully loaded
+            posts_elements = self.driver.find_elements(
+                By.CLASS_NAME, "fie-impression-container"
+            )
+            posts_data = {}
+            for post in posts_elements[:10]:
                 try:
                     more_button = post.find_element(
                         By.CSS_SELECTOR,
                         ".feed-shared-inline-show-more-text__see-more-less-toggle > span",
                     )
-                except NoSuchElementException:
-                    more_button = None
-                    print("no element")
-                if more_button:
+                    # Expand the post if the "see more" button is present.
                     self.driver.execute_script("arguments[0].click();", more_button)
-                    # more_button.click()
-                response[post.text] = post.screenshot_as_png
-            return response
-
-        except Exception as e:
-            logger.error("Failed to search posts: %s", e)
+                except NoSuchElementException:
+                    logger.debug("No 'see more' button found for a post.")
+                posts_data[post.text] = post.screenshot_as_png
+            return posts_data
+        except Exception as err:
+            logger.error("Failed to search posts: %s", err)
             self._capture_screenshot()
             return None
 
-    def _capture_screenshot(self):
+    def _capture_screenshot(self) -> None:
+        """
+        Captures a screenshot of the current driver window for debugging.
+        """
         self.driver.save_screenshot(self.SCREENSHOT_PATH)
         logger.error("Screenshot saved to %s", self.SCREENSHOT_PATH)
 
-    def close(self):
+    def close(self) -> None:
+        """
+        Closes the Selenium WebDriver session.
+        """
         self.driver.quit()
 
 
-def startLinkedinScrapper():
+def start_linkedin_scraper() -> Optional[Dict[str, bytes]]:
+    """
+    Initializes the LinkedIn scraper, logs in, and performs a post search.
+
+    Returns:
+        Optional[Dict[str, bytes]]: The scraped posts data if successful, None otherwise.
+    """
     scraper = LinkedInScraper()
     try:
         if scraper.login():
             posts = scraper.search_posts()
             if posts:
-                logger.info(f"Found {len(posts)} posts:")
+                logger.info("Found %d posts.", len(posts))
                 return posts
             else:
                 logger.warning("No posts found.")
     finally:
         scraper.close()
+    return None
 
 
 if __name__ == "__main__":
@@ -162,6 +210,6 @@ if __name__ == "__main__":
     if scraper.login():
         posts = scraper.search_posts()
         if posts:
-            for post_text, _ in posts.items():
-                print(f"Post: {post_text}")
+            for post_text in posts.keys():
+                logger.info("Post: %s", post_text)
         scraper.close()

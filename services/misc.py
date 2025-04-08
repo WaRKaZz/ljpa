@@ -1,8 +1,8 @@
 import re
 
-from consts import JOB_TITLE_EXTRACTOR_PROMPT
+from config import JOB_TITLE_EXTRACTOR_PROMPT
 from database_setup import TextEntry
-from services.GPT_API import GPT4FreeInteraction
+from services.gpt_api_client import GPT4FreeInteraction
 
 
 def database_vacancy_title_update():

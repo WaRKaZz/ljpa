@@ -1,16 +1,19 @@
-# database_setup.py
 import datetime
-
 from os import path, getcwd
-from peewee import *
 
-from consts import RESOURCES_PATH
+from peewee import CharField, DateField, Model, SqliteDatabase, TextField, BooleanField
 
-db_path = path.join(getcwd(), RESOURCES_PATH, "ai_database.db")
-db = SqliteDatabase(db_path)
+from config import RESOURCES_PATH
+
+# Define the path for the SQLite database file.
+DATABASE_FILE_PATH = path.join(getcwd(), RESOURCES_PATH, "ai_database.db")
+database = SqliteDatabase(DATABASE_FILE_PATH)
 
 
 class TextEntry(Model):
+    """
+    Model representing a text entry for long-form AI discussions.
+    """
     content = TextField()
     created_date = DateField(default=datetime.date.today)
     screenshot_path = CharField()
@@ -25,12 +28,16 @@ class TextEntry(Model):
     spare3 = CharField(max_length=40, null=True)
 
     class Meta:
-        database = db
+        database = database
 
 
-def initialize_database():
-    db.connect()
-    db.create_tables([TextEntry], safe=True)
+def setup_database():
+    """
+    Initializes the SQLite database and creates required tables.
+    If the TextEntry table is empty, a default entry is added.
+    """
+    database.connect()
+    database.create_tables([TextEntry], safe=True)
 
     if not TextEntry.select().exists():
         TextEntry.create(
@@ -50,5 +57,5 @@ def initialize_database():
 
 
 if __name__ == "__main__":
-    initialize_database()
+    setup_database()
     print("AI database created with initial long-form entry!")
