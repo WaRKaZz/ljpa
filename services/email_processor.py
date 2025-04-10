@@ -3,15 +3,19 @@ import re
 
 from config import (
     COVER_LETTER_PROMPT,
+    COVER_LETTER_REVIEWER_PROMPT,
     CV_FILE_PATH_PDF,
+    EMAIL_SIGNATURE,
     SMTP_EMAIL,
     SMTP_PASSWORD,
     SMTP_PORT,
     SMTP_SERVER,
 )
 from database_setup import TextEntry  # Model for vacancy entries
+from services.gpt_api_client import (
+    GPTApiClient,  # Renamed GPT4FreeInteraction to GPTApiClient
+)
 from services.smtp_client import SMTPClient  # Renamed SMTPSender to SMTPClient
-from services.gpt_api_client import GPTApiClient  # Renamed GPT4FreeInteraction to GPTApiClient
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -115,14 +119,24 @@ class EmailProcessor:
         """
         subject = title
         # Generate cover letter using GPT API client.
-        gpt_request = COVER_LETTER_PROMPT + f"\nJob Description: [{content}]"
-        message = self.gpt_api.get_text(gpt_request)
+        for i in range(10):
+            gpt_request = COVER_LETTER_PROMPT + f"\nJob Description: [{content}]"
+            message = self.gpt_api.get_text(gpt_request)
+            double_check = self.gpt_api.get_text(COVER_LETTER_REVIEWER_PROMPT + message)
+            if "yes" in double_check.lower():
+                break
+            if i == 9:
+                logger.error("Failed to generate a valid cover letter")
+                return
+        message += EMAIL_SIGNATURE
         logger.info("Preparing application for vacancy: %s", title)
         logger.debug("Subject: %s | Message: %s", subject, message)
 
         # Sending email via SMTP client.
         with SMTPClient(self.smtp_config) as smtp_client:
-            smtp_client.send_message(recipient_email, subject, message, CV_FILE_PATH_PDF)
+            smtp_client.send_message(
+                recipient_email, subject, message, CV_FILE_PATH_PDF
+            )
 
         logger.info("Application email sent successfully to %s", recipient_email)
 

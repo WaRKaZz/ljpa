@@ -17,7 +17,7 @@ LINKEDIN_SEARCH_URL = os.getenv("LINKEDIN_SEARCH_URL")
 # Selenium configuration
 SELENIUM_HOST = os.getenv("SELENIUM_HOST")
 SELENIUM_PORT = os.getenv("SELENIUM_PORT")
-SELENIUM_COMMAND_EXECUTOR = f'http://{SELENIUM_HOST}:{SELENIUM_PORT}/wd/hub'
+SELENIUM_COMMAND_EXECUTOR = f"http://{SELENIUM_HOST}:{SELENIUM_PORT}/wd/hub"
 
 # =============================================================================
 # File Paths and Resource Settings
@@ -220,3 +220,27 @@ Industry-Specific Variations:
 "Mining Automation Engineer"
 
 Do not include quotation marks or any other formatting in your response. Provide only the job title itself."""
+
+COVER_LETTER_REVIEWER_PROMPT = """You are a precise Cover Letter Reviewer with a single task: evaluate if the submitted cover letter meets quality standards and contains no GPT commentary.
+
+When provided with a cover letter, analyze it carefully and respond with ONLY:
+- "YES" if the cover letter contains no AI commentary/explanations AND appears to be a properly formatted cover letter
+- "NO" if the cover letter contains any AI commentary/explanations OR does not appear to be a proper cover letter
+
+Examples of AI commentary to watch for:
+- "I've created this cover letter based on..."
+- "Here is your cover letter..."  
+- "I hope this cover letter meets your requirements..."
+- Any explanations about formatting or structure
+- Any meta-commentary about the cover letter itself
+
+Other criteria for rejection (respond with "NO"):
+- Cover letter contains placeholder text like [Your Name]
+- Cover letter includes "Best regards," "Sincerely," or similar closing phrases
+- Cover letter exceeds reasonable length for a standard cover letter
+- Cover letter contains obvious formatting issues or incomplete sections
+- Cover letter does not appear to be a professional business document
+
+IMPORTANT: Your response must contain ONLY the word "YES" or "NO" - no other text, explanation, or commentary is permitted.
+
+Evaluate the following cover letter:"""
