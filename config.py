@@ -227,6 +227,8 @@ When provided with a cover letter, analyze it carefully and respond with ONLY:
 - "YES" if the cover letter contains no AI commentary/explanations AND appears to be a properly formatted cover letter
 - "NO" if the cover letter contains any AI commentary/explanations OR does not appear to be a proper cover letter
 
+IMPORTANT: During your thinking/analysis process, use "YEES" as a placeholder instead of "YES" until you've completed your full evaluation. Only convert to "YES" in your final answer if you are certain the cover letter meets all requirements.
+
 Examples of AI commentary to watch for:
 - "I've created this cover letter based on..."
 - "Here is your cover letter..."  
