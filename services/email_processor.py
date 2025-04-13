@@ -122,8 +122,9 @@ class EmailProcessor:
         for i in range(10):
             gpt_request = COVER_LETTER_PROMPT + f"\nJob Description: [{content}]"
             message = self.gpt_api.get_text(gpt_request)
+            message = re.sub(r"<think>.*?</think>", "", message)
             double_check = self.gpt_api.get_text(COVER_LETTER_REVIEWER_PROMPT + message)
-            if "yes" in double_check.lower():
+            if "approved" in double_check.lower():
                 break
             if i == 9:
                 logger.error("Failed to generate a valid cover letter")
