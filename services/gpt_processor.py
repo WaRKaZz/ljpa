@@ -113,7 +113,7 @@ class GPTProcessor:
         """
         # Switch model if repeated errors occur.
         if self.prompt_errors >= 2:
-            self.gpt.switch_model()
+            self.gpt.rotate_text_model()
 
         # Pattern for fields in the format: key: [value]
         pattern = r"(\w+):\s*\[([^]]+)\]"
