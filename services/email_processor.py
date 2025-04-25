@@ -1,5 +1,6 @@
 import logging
 import re
+from datetime import datetime, timedelta
 
 from config import (
     COVER_LETTER_PROMPT,
@@ -30,7 +31,7 @@ class EmailProcessor:
 
     def __init__(self) -> None:
         self.gpt_api = GPTApiClient()
-        self.processed_emails = set()
+        self.processed_emails = self.get_recent_applied_emails()
         self.smtp_config = {
             "email": SMTP_EMAIL,
             "password": SMTP_PASSWORD,
@@ -51,6 +52,8 @@ class EmailProcessor:
                 continue
             self.send_application(email, vacancy.vacancy_title, vacancy.content)
             vacancy.spare1 = "Applied"
+            now = datetime.now()
+            vacancy.spare2 = now.strftime("%Y-%m-%d")
             vacancy.save()
             logger.info("Marked vacancy '%s' as applied.", vacancy.vacancy_title)
 
@@ -77,6 +80,26 @@ class EmailProcessor:
                 eligible.append(vacancy)
         return eligible
 
+    def get_recent_applied_emails(self):
+        one_month_ago = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+
+        # Query for relevant rows
+        entries = TextEntry.select().where(
+            (TextEntry.spare1 == "Applied") &
+            (TextEntry.spare2 >= one_month_ago)
+        )
+
+        email_set = set()
+        email_regex = re.compile(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+")
+
+        for entry in entries:
+            if entry.credentials:
+                match = email_regex.search(entry.credentials)
+                if match:
+                    email_set.add(match.group())
+
+        return email_set
+    
     def extract_email(self, text: str) -> str:
         """
         Extracts the first valid email address from the provided text.
