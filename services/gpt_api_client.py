@@ -35,8 +35,8 @@ class GPTApiClient:
         """
         Rotates the text model among a predefined set of models.
         """
-        self._index = (self._index + 1) % len(self.models)
-        self.model = self.models[self._index]
+        self._index = (self._index + 1) % len(self.text_models)
+        self.model = self.text_models[self._index]
 
     def get_text(self, prompt: str) -> str:
         """
