@@ -20,7 +20,10 @@ class TelegramNotifier:
 
     def send_message(self, message: str) -> None:
         """Sends a plain text message to Telegram."""
-        asyncio.run(self._async_send(self.bot.send_message, text=message))
+        if type(message) == str:
+            asyncio.run(self._async_send(self.bot.send_message, message))
+        else:
+            logger.info("message is not string")
 
     def send_image(self, image_path: str, caption: str = "") -> None:
         """Sends an image with optional caption to Telegram."""

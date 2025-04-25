@@ -11,6 +11,7 @@
 # Exclude environment and temporary files (optional, adjust if needed)
 .env
 .venv
+venv
 *.log
 .git
 

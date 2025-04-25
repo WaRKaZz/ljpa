@@ -117,7 +117,7 @@ class EmailProcessor:
             title (str): The vacancy title used as the email subject.
             content (str): The vacancy content used to generate the cover letter.
         """
-        subject = title
+        subject = title.title()
         # Generate cover letter using GPT API client.
         for i in range(10):
             gpt_request = COVER_LETTER_PROMPT + f"\nJob Description: [{content}]"
