@@ -18,7 +18,7 @@ services:
     build: .
     container_name: linkedin-bot
     volumes:
-      - ./resources:/code/src/ljpa/resources
+      - ./resources:/code/resources
       - ./screenshots:/code/screenshots
     env_file:
       - .env # Load environment variables from .env file

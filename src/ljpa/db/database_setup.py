@@ -7,8 +7,6 @@ from utilities.config import RESOURCES_PATH
 
 # Define the path for the SQLite database file.
 DATABASE_FILE_PATH = path.join(getcwd(), RESOURCES_PATH, "ai_database.db")
-print(DATABASE_FILE_PATH)
-print(getcwd())
 database = SqliteDatabase(DATABASE_FILE_PATH)
 
 
