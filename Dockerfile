@@ -17,8 +17,6 @@ RUN mkdir /code/screenshots
 
 EXPOSE 8080 5900
 
-CMD ["bash", "-c", "while true; do sleep 60; done"]
-# docker file troubleshooting
-
-# CMD ["sh", "-c", \
-#     "python -m ljpa.db.database_setup && python -m ljpa.main"]
+CMD ["sh", "-c", \
+    "PYTHONPATH=/code/src/ljpa python /code/src/ljpa/db/database_setup.py && \
+     python /code/src/ljpa/main.py"]
