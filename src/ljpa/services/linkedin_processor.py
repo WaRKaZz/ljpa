@@ -2,7 +2,7 @@ import logging
 import os
 from datetime import datetime
 
-from database.repository import TextEntryRepository
+from db.repository import TextEntryRepository
 from services.gpt_processor import GPTProcessor
 from services.linkedin_scraper import startLinkedinScrapper
 from utilities.file_handler import save_screenshot

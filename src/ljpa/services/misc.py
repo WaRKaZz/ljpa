@@ -1,7 +1,7 @@
 import re
 
 from utilities.config import JOB_TITLE_EXTRACTOR_PROMPT
-from database_setup import TextEntry
+from db.database_setup import TextEntry
 from services.gpt_api_client import GPT4FreeInteraction
 
 
