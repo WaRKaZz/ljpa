@@ -19,7 +19,7 @@ pydantic_core==2.27.2
 PySocks==1.7.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
-python-jobspy==1.1.76
+#python-jobspy==1.1.76
 python-telegram-bot==21.10
 pytz==2025.1
 regex==2024.11.6
