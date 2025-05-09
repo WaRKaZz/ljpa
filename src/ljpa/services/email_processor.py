@@ -2,7 +2,7 @@ import logging
 import re
 from datetime import datetime, timedelta
 
-from config import (
+from utilities.config import (
     COVER_LETTER_PROMPT,
     COVER_LETTER_REVIEWER_PROMPT,
     CV_FILE_PATH_PDF,
@@ -12,7 +12,7 @@ from config import (
     SMTP_PORT,
     SMTP_SERVER,
 )
-from database_setup import TextEntry  # Model for vacancy entries
+from db.database_setup import TextEntry  # Model for vacancy entries
 from services.gpt_api_client import (
     GPTApiClient,  # Renamed GPT4FreeInteraction to GPTApiClient
 )
@@ -85,8 +85,7 @@ class EmailProcessor:
 
         # Query for relevant rows
         entries = TextEntry.select().where(
-            (TextEntry.spare1 == "Applied") &
-            (TextEntry.spare2 >= one_month_ago)
+            (TextEntry.spare1 == "Applied") & (TextEntry.spare2 >= one_month_ago)
         )
 
         email_set = set()
@@ -99,7 +98,7 @@ class EmailProcessor:
                     email_set.add(match.group())
 
         return email_set
-    
+
     def extract_email(self, text: str) -> str:
         """
         Extracts the first valid email address from the provided text.

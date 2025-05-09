@@ -7,11 +7,10 @@
 **/*.pyc
 **/*.pyo
 **/*.pyd
-/resources
+/src/ljpa/resources
 # Exclude environment and temporary files (optional, adjust if needed)
 .env
 .venv
-venv
 *.log
 .git
 

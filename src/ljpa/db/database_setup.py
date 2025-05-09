@@ -3,10 +3,12 @@ from os import path, getcwd
 
 from peewee import CharField, DateField, Model, SqliteDatabase, TextField, BooleanField
 
-from config import RESOURCES_PATH
+from utilities.config import RESOURCES_PATH
 
 # Define the path for the SQLite database file.
 DATABASE_FILE_PATH = path.join(getcwd(), RESOURCES_PATH, "ai_database.db")
+print(DATABASE_FILE_PATH)
+print(getcwd())
 database = SqliteDatabase(DATABASE_FILE_PATH)
 
 
@@ -14,6 +16,7 @@ class TextEntry(Model):
     """
     Model representing a text entry for long-form AI discussions.
     """
+
     content = TextField()
     created_date = DateField(default=datetime.date.today)
     screenshot_path = CharField()

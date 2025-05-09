@@ -2,7 +2,7 @@ import logging
 
 import requests
 
-from config import G4FREE_PROVIDER, GPT4FREE_HOST
+from utilities.config import G4FREE_PROVIDER, GPT4FREE_HOST
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)

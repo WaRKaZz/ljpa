@@ -1,7 +1,7 @@
 import logging
 from typing import Any
 
-from database.repository import TextEntryRepository
+from db.repository import TextEntryRepository
 from services.gpt_processor import GPTProcessor
 from services.telemessage import TelegramNotifier
 

@@ -3,7 +3,7 @@ from datetime import datetime
 
 from peewee import DoesNotExist
 
-from database_setup import TextEntry
+from .database_setup import TextEntry
 
 logger = logging.getLogger(__name__)
 

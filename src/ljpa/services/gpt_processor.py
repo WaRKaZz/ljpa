@@ -3,7 +3,7 @@ import re
 import time
 from typing import Dict
 
-from config import RECRUITMENT_PROMPT, TELEGRAM_CLEAR_PROMPT
+from utilities.config import RECRUITMENT_PROMPT, TELEGRAM_CLEAR_PROMPT
 from services.gpt_api_client import GPTApiClient, GPTResponseFormatError
 
 # Configure logging for the module.

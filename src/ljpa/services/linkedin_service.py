@@ -4,7 +4,7 @@ from datetime import datetime
 
 from services.telemessage import TelegramNotifier
 
-from database.repository import TextEntryRepository
+from db.repository import TextEntryRepository
 from services.gpt_processor import GPTProcessor
 from services.linkedin_scraper import start_linkedin_scraper
 from utilities.file_handler import save_screenshot

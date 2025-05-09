@@ -10,12 +10,12 @@
 # Exclude environment and temporary files (optional, adjust if needed)
 .env
 .venv
-venv
 *.log
 .git
 
-/screenshots
 /resources
+/screenshots
+/src/ljpa/resources
 generated_images/
 har_and_cookies/
 test.py

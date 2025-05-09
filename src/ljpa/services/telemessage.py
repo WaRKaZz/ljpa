@@ -3,7 +3,7 @@ import logging
 
 from telegram import Bot
 
-from config import BOT_TOKEN, CHAT_ID
+from utilities.config import BOT_TOKEN, CHAT_ID
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -20,10 +20,7 @@ class TelegramNotifier:
 
     def send_message(self, message: str) -> None:
         """Sends a plain text message to Telegram."""
-        if type(message) == str:
-            asyncio.run(self._async_send(self.bot.send_message, message))
-        else:
-            logger.info("message is not string")
+        asyncio.run(self._async_send(self.bot.send_message, text=message))
 
     def send_image(self, image_path: str, caption: str = "") -> None:
         """Sends an image with optional caption to Telegram."""

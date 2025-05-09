@@ -13,7 +13,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from config import LINKEDIN_SEARCH_URL, RESOURCES_PATH, SELENIUM_COMMAND_EXECUTOR
+from utilities.config import LINKEDIN_SEARCH_URL, RESOURCES_PATH, SELENIUM_COMMAND_EXECUTOR
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
