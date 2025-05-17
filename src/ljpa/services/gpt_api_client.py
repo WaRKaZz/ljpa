@@ -1,7 +1,6 @@
 import logging
 
 import requests
-
 from utilities.config import G4FREE_PROVIDER, GPT4FREE_HOST
 
 logger = logging.getLogger(__name__)
@@ -28,8 +27,9 @@ class GPTApiClient:
             base_url = f"http://{GPT4FREE_HOST}:1337/v1"
         self.base_url = base_url
         self._index = 0
-        self.text_models = self._get_text_models()
-        self.text_model = self.text_models[self._index]
+        self.text_models = None
+        self.text_model = None
+        self._initialized = True
 
     def rotate_text_model(self):
         """
@@ -48,6 +48,10 @@ class GPTApiClient:
         Returns:
             str: The generated text or an error message if all attempts fail.
         """
+        if not self._initialized:
+            self._initialize()
+        if not self.model:
+            self.model = self._get_text_models
         url = f"{self.base_url}/chat/completions"
         payload = {
             "model": self.text_model,
@@ -71,10 +75,19 @@ class GPTApiClient:
                 continue
         return "Error: Impossible Situation"
 
+    def _initialize(self):
+        self.text_models = self._get_text_models()
+        self.text_model = self.text_models[self._index]
+        self._initialized = True
+
     def _get_text_models(self):
         provider_list_url = f"{self.base_url}/providers/{G4FREE_PROVIDER}"
-        response = requests.get(
-            provider_list_url, headers={"accept": "application/json"}
-        )
+        try:
+            response = requests.get(
+                provider_list_url, headers={"accept": "application/json"}
+            )
+        except requests.exceptions.RequestException as err:
+            logger.error("Request error in get_text_models: %s", str(err))
+            return None
         provider_details = response.json()
         return provider_details["models"]
