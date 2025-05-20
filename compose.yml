@@ -1,7 +1,7 @@
 services:
   selenium:
     image: selenium/standalone-chromium
-    container_name: selenium-container
+    container_name: selenium
     ports:
       - "4444:4444"
       - "${NOVNC_PORT:-7900}:7900"
@@ -18,7 +18,7 @@ services:
 
   g4f:
     image: hlohaus789/g4f:latest-slim
-    container_name: g4f-container
+    container_name: g4f
     volumes:
       - ./har_and_cookies:/app/har_and_cookies
       - ./generated_images:/app/generated_images
