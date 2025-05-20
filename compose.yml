@@ -1,36 +1,24 @@
 services:
   selenium:
-    image: selenium/standalone-chromium # VNC-enabled
+    image: selenium/standalone-chromium
+    container_name: selenium-container
     ports:
-      - "4444:4444" # Selenium WebDriver
-      - "${NOVNC_PORT:-7900}:7900" # VNC port (connect with VNC viewer)
-    shm_size: '2g' # Critical for Chrome
+      - "4444:4444"
+      - "${NOVNC_PORT:-7900}:7900"
+    shm_size: '2g'
     networks:
       - ljpa-network
     environment:
-      - SE_VNC_NO_PASSWORD=1 # Optional: Disable VNC password
+      - SE_VNC_NO_PASSWORD=1
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:4444/wd/hub/status" ]
       interval: 1s
       timeout: 3s
       retries: 30
-  linkedin-bot:
-    build: .
-    container_name: linkedin-bot
-    volumes:
-      - ./resources:/code/resources
-      - ./screenshots:/code/screenshots
-    env_file:
-      - .env # Load environment variables from .env file
-    depends_on:
-      selenium:
-        condition: service_healthy
-    networks:
-      - ljpa-network
 
   g4f:
     image: hlohaus789/g4f:latest-slim
-    container_name: g4f
+    container_name: g4f-container
     volumes:
       - ./har_and_cookies:/app/har_and_cookies
       - ./generated_images:/app/generated_images
@@ -38,15 +26,34 @@ services:
       - G4F_DEBUG=true
     ports:
       - "1337:1337"
+    networks:
+      - ljpa-network
     command: >
       sh -c "rm -rf /app/g4f/ &&
              pip install -U g4f[slim] &&
              python -m g4f --debug"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:1337" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  linkedin-bot:
+    build: .
+    container_name: linkedin-bot
+    volumes:
+      - ./resources:/code/resources
+      - ./screenshots:/code/screenshots
+    env_file:
+      - .env
+    depends_on:
+      selenium:
+        condition: service_healthy
+      g4f:
+        condition: service_healthy
     networks:
       - ljpa-network
-    # depends_on:
-    #   - linkedin-bot
-    restart: unless-stopped
 
 networks:
   ljpa-network:
