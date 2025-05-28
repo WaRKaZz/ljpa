@@ -22,7 +22,6 @@ class GPTProcessor:
 
     def __init__(self) -> None:
         self.gpt: GPTApiClient = GPTApiClient()
-        self.prompt_errors = 0
 
     def analyze_vacancy(self, text: str) -> Dict[str, str]:
         """
@@ -111,9 +110,6 @@ class GPTProcessor:
         Returns:
             dict: Dictionary with parsed field values.
         """
-        # Switch model if repeated errors occur.
-        if self.prompt_errors >= 2:
-            self.gpt.rotate_text_model()
 
         # Pattern for fields in the format: key: [value]
         pattern = r"(\w+):\s*\[([^]]+)\]"
@@ -122,18 +118,15 @@ class GPTProcessor:
         # Ensure required fields are present.
         for required_field in ["vacancy"]:
             if required_field not in fields:
-                self.prompt_errors += 1
                 raise GPTResponseFormatError(f"Missing required field: {required_field}")
 
         # For vacancies that are marked true, ensure cv_match is present and valid.
         if fields.get("vacancy") == "true":
             if "cv_match" not in fields:
-                self.prompt_errors += 1
                 raise GPTResponseFormatError("CV match required when vacancy=true")
             try:
                 fields["cv_match"] = int(fields["cv_match"].replace("%", ""))
             except ValueError:
-                self.prompt_errors += 1
                 raise GPTResponseFormatError("Invalid CV match format")
 
         # Validate fields with expected values.
@@ -143,7 +136,6 @@ class GPTProcessor:
         }
         for field, value in fields.items():
             if field in validations and value.lower() not in validations[field]:
-                self.prompt_errors += 1
                 raise GPTResponseFormatError(f"Invalid value '{value}' for field {field}")
 
         # Remap keys to maintain original case based on the response.

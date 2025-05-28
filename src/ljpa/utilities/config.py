@@ -14,7 +14,7 @@ EMAIL_SIGNATURE = os.getenv("EMAIL_SIGNATURE")
 GPT4FREE_HOST = os.getenv("GPT4FREE_HOST")
 G4FREE_PROVIDER = os.getenv("G4FREE_PROVIDER")
 LINKEDIN_SEARCH_URL = os.getenv("LINKEDIN_SEARCH_URL")
-
+PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
 
 # Selenium configuration
 SELENIUM_HOST = os.getenv("SELENIUM_HOST")
@@ -95,6 +95,7 @@ CRITICAL RULES:
 - Prioritize collecting email addresses - search thoroughly!
 - Do not include physical addresses
 - Do not differentiate between direct contacts vs application portals
+- DO NOT PROVIDE YOUR COMMENTARIES, DO NOT USE markdown at all
 
 Example Response 1:
 'vacancy:[true]
@@ -117,6 +118,8 @@ TELEGRAM_CLEAR_PROMPT = """You are a text refinement assistant. Your task is to 
 3. Maintain clear, concise, and professional formatting.
 4. Ensure the final text is compact yet informative.
 5. If needed, prioritize key details over less relevant information.
+6. DO NOT PROVIDE YOUR COMMENTARIES, DO NOT USE markdown at all
+7. 1000 UTF-8 characters maximum
 
 Your output should be a polished, Telegram-friendly job post that remains engaging and easy to read."""
 
@@ -133,6 +136,7 @@ IMPORTANT RULES - FOLLOW EXACTLY:
 - DO NOT start with "I would like to"
 - DO NOT include any explanations or commentary about the cover letter
 - DO NOT include placeholders like [Your Name] or similar
+- DO NOT PROVIDE YOUR COMMENTARIES, DO NOT USE markdown at all
 
 Relocation and Visa Requirements:
 - Only mention relocation if explicitly required in job description
@@ -221,6 +225,7 @@ Industry-Specific Variations:
 "Water Treatment Controls Engineer"
 "Mining Automation Engineer"
 
+DO NOT PROVIDE YOUR COMMENTARIES, DO NOT USE markdown at all
 Do not include quotation marks or any other formatting in your response. Provide only the job title itself."""
 
 COVER_LETTER_REVIEWER_PROMPT = """You are a precise Cover Letter Reviewer with a single task: evaluate if the submitted cover letter meets quality standards and contains no GPT commentary.
@@ -245,5 +250,5 @@ Other criteria for rejection (respond with "NOTALLOWED"):
 - Cover letter does not appear to be a professional business document
 
 IMPORTANT: Your response must contain ONLY the word "APPROVED" or "NOTALLOWED" - no other text, explanation, or commentary is permitted.
-
+DO NOT PROVIDE YOUR COMMENTARIES, DO NOT USE markdown at all
 Evaluate the following cover letter:"""

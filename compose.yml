@@ -16,24 +16,6 @@ services:
       timeout: 3s
       retries: 30
 
-  g4f:
-    image: hlohaus789/g4f:latest-slim
-    container_name: g4f
-    volumes:
-      - ./har_and_cookies:/app/har_and_cookies
-      - ./generated_images:/app/generated_images
-    environment:
-      - G4F_DEBUG=true
-    ports:
-      - "1337:1337"
-    networks:
-      - ljpa-network
-    command: >
-      sh -c "rm -rf /app/g4f/ &&
-             pip install -U g4f[slim] &&
-             python -m g4f --debug"
-    restart: unless-stopped
-
   linkedin-bot:
     build: .
     container_name: linkedin-bot

@@ -1,80 +1,87 @@
 import logging
 
 import requests
+from utilities.config import PERPLEXITY_API_KEY
 
-from utilities.config import G4FREE_PROVIDER, GPT4FREE_HOST
+COST_THRESHOLD = 0.5
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
 class GPTResponseFormatError(Exception):
-    """
-    Custom exception for GPT API response format errors.
-    """
+    pass
 
+
+class InsufficientFundsError(Exception):
     pass
 
 
 class GPTApiClient:
-    """
-    Client for interacting with the GPT4Free API service.
+    def __init__(self, model: str = "sonar"):
+        self.base_url = "https://api.perplexity.ai"
+        self.model = model
+        self.headers = {
+            "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
+            "Content-Type": "application/json",
+        }
 
-    Provides methods for generating text and images based on input prompts.
-    """
+        self.model_pricing = {
+            "sonar-deep-research": {"input": 5.0, "output": 5.0},
+            "sonar-reasoning-pro": {"input": 3.0, "output": 3.0},
+            "sonar-reasoning": {"input": 1.0, "output": 1.0},
+            "sonar-pro": {"input": 1.0, "output": 1.0},
+            "sonar": {"input": 0.2, "output": 0.2},
+            "r1-1776": {"input": 2.0, "output": 2.0},
+        }
 
-    def __init__(self, base_url: str = None):
-        if base_url is None:
-            base_url = f"http://{GPT4FREE_HOST}:1337/v1"
-        self.base_url = base_url
-        self._index = 0
-        self.text_models = self._get_text_models()
-        self.text_model = self.text_models[self._index]
+    def count_tokens(self, text: str) -> int:
+        try:
+            encoder = tiktoken.get_encoding("cl100k_base")
+            return len(encoder.encode(text))
+        except Exception:
+            return len(text) // 4
 
-    def rotate_text_model(self):
-        """
-        Rotates the text model among a predefined set of models.
-        """
-        self._index = (self._index + 1) % len(self.text_models)
-        self.model = self.text_models[self._index]
+    def estimate_cost(self, prompt: str, expected_output: int = 150) -> float:
+        input_tokens = self.count_tokens(prompt) + self.count_tokens(
+            "You are a helpful assistant."
+        )
+        pricing = self.model_pricing.get(self.model, {"input": 1.0, "output": 1.0})
 
-    def get_text(self, prompt: str) -> str:
-        """
-        Generate text based on the provided prompt by switching models on errors.
+        input_cost = (input_tokens / 1_000_000) * pricing["input"]
+        output_cost = (expected_output / 1_000_000) * pricing["output"]
 
-        Args:
-            prompt (str): The user prompt for text generation.
+        if "deep-research" in self.model:
+            input_cost *= 10
+        elif "reasoning" in self.model:
+            input_cost *= 5
 
-        Returns:
-            str: The generated text or an error message if all attempts fail.
-        """
+        return input_cost + output_cost
+
+    def get_text(self, prompt: str, expected_output: int = 150) -> str:
+        cost = self.estimate_cost(prompt, expected_output)
+
+        if cost > COST_THRESHOLD:
+            raise InsufficientFundsError(
+                f"Cost ${cost:.6f} exceeds threshold ${COST_THRESHOLD}"
+            )
+
         url = f"{self.base_url}/chat/completions"
         payload = {
-            "model": self.text_model,
-            "provider": G4FREE_PROVIDER,
+            "model": self.model,
             "messages": [
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt},
             ],
-            "stream": False,
         }
-        # Try all text models, rotating the text model on each failure.
-        for _ in range(len(self.text_models) - 1):
-            self.rotate_text_model()
-            try:
-                response = requests.post(url, json=payload)
-                response.raise_for_status()
-                # Assumption: response is expected to follow the GPT API format.
-                return response.json()["choices"][0]["message"]["content"]
-            except requests.exceptions.RequestException as err:
-                logger.error("Request error in get_text: %s", str(err))
-                continue
-        return "Error: Impossible Situation"
 
-    def _get_text_models(self):
-        provider_list_url = f"{self.base_url}/providers/{G4FREE_PROVIDER}"
-        response = requests.get(
-            provider_list_url, headers={"accept": "application/json"}
-        )
-        provider_details = response.json()
-        return provider_details["models"]
+        try:
+            response = requests.post(url, headers=self.headers, json=payload)
+            response.raise_for_status()
+            return response.json()["choices"][0]["message"]["content"]
+        except requests.exceptions.RequestException as err:
+            logger.error("Request error: %s", str(err))
+            return "Error: Request failed"
+        except (KeyError, IndexError) as err:
+            logger.error("Response format error: %s", str(err))
+            return "Error: Invalid response format"
