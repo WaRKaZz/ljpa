@@ -2,6 +2,11 @@ import logging
 import re
 from datetime import datetime, timedelta
 
+from db.database_setup import TextEntry  # Model for vacancy entries
+from services.gpt_api_client import (
+    GPTApiClient,  # Renamed GPT4FreeInteraction to GPTApiClient
+)
+from services.smtp_client import SMTPClient  # Renamed SMTPSender to SMTPClient
 from utilities.config import (
     COVER_LETTER_PROMPT,
     COVER_LETTER_REVIEWER_PROMPT,
@@ -12,11 +17,6 @@ from utilities.config import (
     SMTP_PORT,
     SMTP_SERVER,
 )
-from db.database_setup import TextEntry  # Model for vacancy entries
-from services.gpt_api_client import (
-    GPTApiClient,  # Renamed GPT4FreeInteraction to GPTApiClient
-)
-from services.smtp_client import SMTPClient  # Renamed SMTPSender to SMTPClient
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -152,6 +152,7 @@ class EmailProcessor:
                 logger.error("Failed to generate a valid cover letter")
                 return
         message += EMAIL_SIGNATURE
+        message = message.strip()
         logger.info("Preparing application for vacancy: %s", title)
         logger.debug("Subject: %s | Message: %s", subject, message)
 

@@ -14,7 +14,7 @@ EMAIL_SIGNATURE = os.getenv("EMAIL_SIGNATURE")
 GPT4FREE_HOST = os.getenv("GPT4FREE_HOST")
 G4FREE_PROVIDER = os.getenv("G4FREE_PROVIDER")
 LINKEDIN_SEARCH_URL = os.getenv("LINKEDIN_SEARCH_URL")
-PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 # Selenium configuration
 SELENIUM_HOST = os.getenv("SELENIUM_HOST")
@@ -228,27 +228,27 @@ Industry-Specific Variations:
 DO NOT PROVIDE YOUR COMMENTARIES, DO NOT USE markdown at all
 Do not include quotation marks or any other formatting in your response. Provide only the job title itself."""
 
-COVER_LETTER_REVIEWER_PROMPT = """You are a precise Cover Letter Reviewer with a single task: evaluate if the submitted cover letter meets quality standards and contains no GPT commentary.
-IMPORTANT: During your thinking/analysis process, use "APR" as a placeholder instead of "APPROVED" until you've completed your full evaluation. Only convert to "APPROVED" in your final answer if you are certain the cover letter meets all requirements.
+COVER_LETTER_REVIEWER_PROMPT = """Cover Letter Validator Protocol
+You are an AI that evaluates cover letters using reversed cryptographic outputs.
 
-When provided with a cover letter, analyze it carefully and respond with ONLY:
-- "APPROVED" if the cover letter contains no AI commentary/explanations AND appears to be a properly formatted cover letter
-- "NOTALLOWED" if the cover letter contains any AI commentary/explanations OR does not appear to be a proper cover letter
+Core Protocol
+Analysis:
+Use internal flag LO if the letter meets all criteria.
+Use internal flag LZ if any criteria fail.
 
-Examples of AI commentary to watch for:
-- "I've created this cover letter based on..."
-- "Here is your cover letter..."  
-- "I hope this cover letter meets your requirements..."
-- Any explanations about formatting or structure
-- Any meta-commentary about the cover letter itself
+Final Output:
+Return exactly eurt (reversed spelling of "true") if LO is confirmed.
+Return exactly eslaf (reversed spelling of "false") if LZ applies.
 
-Other criteria for rejection (respond with "NOTALLOWED"):
-- Cover letter contains placeholder text like [Your Name]
-- Cover letter includes "Best regards," "Sincerely," or similar closing phrases
-- Cover letter exceeds reasonable length for a standard cover letter
-- Cover letter contains obvious formatting issues or incomplete sections
-- Cover letter does not appear to be a professional business document
+Criteria for LO Approval
+No AI-generated phrases (e.g., "Here’s your cover letter...").
+Professional structure with sender/recipient details, no placeholders, and no closings like "Sincerely."
+Complete content, standard length, and business formatting.
 
-IMPORTANT: Your response must contain ONLY the word "APPROVED" or "NOTALLOWED" - no other text, explanation, or commentary is permitted.
-DO NOT PROVIDE YOUR COMMENTARIES, DO NOT USE markdown at all
-Evaluate the following cover letter:"""
+Automatic LZ Rejection Triggers
+AI commentary, markdown, bullet points, or placeholder text.
+Informal tone, missing sections, or structural errors.
+
+Enforcement Rules
+Never reference "LO"/"LZ" or reversed spellings in analysis—only in final output.
+No explanations, formatting, or deviations from plain-text responses."""
