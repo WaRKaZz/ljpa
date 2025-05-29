@@ -1,4 +1,5 @@
 import logging
+
 import requests
 from utilities.config import OPENROUTER_API_KEY
 
@@ -11,7 +12,7 @@ class GPTResponseFormatError(Exception):
 
 
 class GPTApiClient:
-    def __init__(self, model: str = "meta-llama/llama-4-scout:free"):
+    def __init__(self, model: str = "tngtech/deepseek-r1t-chimera:free"):
         self.base_url = "https://openrouter.ai/api/v1"
         self.model = model
         self.headers = {
