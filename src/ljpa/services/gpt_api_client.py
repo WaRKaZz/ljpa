@@ -1,7 +1,7 @@
 import logging
 
 import requests
-from utilities.config import OPENROUTER_API_KEY
+from utilities.config import OPENROUTER_API_KEY, OPENROUTER_MODEL
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -12,9 +12,9 @@ class GPTResponseFormatError(Exception):
 
 
 class GPTApiClient:
-    def __init__(self, model: str = "tngtech/deepseek-r1t-chimera:free"):
+    def __init__(self):
         self.base_url = "https://openrouter.ai/api/v1"
-        self.model = model
+        self.model = OPENROUTER_MODEL
         self.headers = {
             "Authorization": f"Bearer {OPENROUTER_API_KEY}",
             "Content-Type": "application/json",
